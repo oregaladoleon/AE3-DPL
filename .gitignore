@@ -1,0 +1,50 @@
+# Created by https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode
+
+### Linux ###
+*~
+# temporary files which can be created if a process still has an open file of a deleted file
+.fuse_hidden*
+# System volume information
+.directory
+# Trash folder which might appear on any partition or disk
+.Trash-*
+# .nfs files
+.nfs*
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Local Extension Files
+*.vsix
+
+### Nginx ###
+*.log
+logs/
+nginx.pid
+nginx.app.pid
+
+### AE3 - Reglas de seguridad y temporales (OBLIGATORIAS) ###
+# Claves privadas SSL 
+*.key
+*.pem
+certs/*.key
+
+# Ficheros de contraseñas de autenticación básica
+htpasswd*
+.htpasswd
+
+# Salidas de GoAccess e informes temporales
+/tmp/*.json
+
+# Imágenes de prueba generadas con ImageMagick
+web/img/
+img/
