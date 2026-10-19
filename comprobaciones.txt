@@ -1,0 +1,472 @@
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+root@e6f31f3fcaf6:/# nginx -s reload
+2026/10/19 18:43:23 [notice] 26#26: signal process started
+2026/10/19 18:43:23 [error] 26#26: invalid PID number "" in "/run/nginx.pid"
+root@e6f31f3fcaf6:/# nginx -T        
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+# configuration file /etc/nginx/nginx.conf:
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+	worker_connections 768;
+	# multi_accept on;
+}
+
+http {
+
+	##
+	# Basic Settings
+	##
+
+	sendfile on;
+	tcp_nopush on;
+	types_hash_max_size 2048;
+	# server_tokens off;
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	# gzip_buffers 16 8k;
+	# gzip_http_version 1.1;
+	# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# Virtual Host Configs
+	##
+
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+}
+
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+#
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+#
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+#
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}
+
+# configuration file /etc/nginx/modules-enabled/50-mod-http-image-filter.conf:
+load_module modules/ngx_http_image_filter_module.so;
+
+# configuration file /etc/nginx/mime.types:
+
+types {
+    text/html                                        html htm shtml;
+    text/css                                         css;
+    text/xml                                         xml;
+    image/gif                                        gif;
+    image/jpeg                                       jpeg jpg;
+    application/javascript                           js;
+    application/atom+xml                             atom;
+    application/rss+xml                              rss;
+
+    text/mathml                                      mml;
+    text/plain                                       txt;
+    text/vnd.sun.j2me.app-descriptor                 jad;
+    text/vnd.wap.wml                                 wml;
+    text/x-component                                 htc;
+
+    image/avif                                       avif;
+    image/png                                        png;
+    image/svg+xml                                    svg svgz;
+    image/tiff                                       tif tiff;
+    image/vnd.wap.wbmp                               wbmp;
+    image/webp                                       webp;
+    image/x-icon                                     ico;
+    image/x-jng                                      jng;
+    image/x-ms-bmp                                   bmp;
+
+    font/woff                                        woff;
+    font/woff2                                       woff2;
+
+    application/java-archive                         jar war ear;
+    application/json                                 json;
+    application/mac-binhex40                         hqx;
+    application/msword                               doc;
+    application/pdf                                  pdf;
+    application/postscript                           ps eps ai;
+    application/rtf                                  rtf;
+    application/vnd.apple.mpegurl                    m3u8;
+    application/vnd.google-earth.kml+xml             kml;
+    application/vnd.google-earth.kmz                 kmz;
+    application/vnd.ms-excel                         xls;
+    application/vnd.ms-fontobject                    eot;
+    application/vnd.ms-powerpoint                    ppt;
+    application/vnd.oasis.opendocument.graphics      odg;
+    application/vnd.oasis.opendocument.presentation  odp;
+    application/vnd.oasis.opendocument.spreadsheet   ods;
+    application/vnd.oasis.opendocument.text          odt;
+    application/vnd.openxmlformats-officedocument.presentationml.presentation
+                                                     pptx;
+    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+                                                     xlsx;
+    application/vnd.openxmlformats-officedocument.wordprocessingml.document
+                                                     docx;
+    application/vnd.wap.wmlc                         wmlc;
+    application/wasm                                 wasm;
+    application/x-7z-compressed                      7z;
+    application/x-cocoa                              cco;
+    application/x-java-archive-diff                  jardiff;
+    application/x-java-jnlp-file                     jnlp;
+    application/x-makeself                           run;
+    application/x-perl                               pl pm;
+    application/x-pilot                              prc pdb;
+    application/x-rar-compressed                     rar;
+    application/x-redhat-package-manager             rpm;
+    application/x-sea                                sea;
+    application/x-shockwave-flash                    swf;
+    application/x-stuffit                            sit;
+    application/x-tcl                                tcl tk;
+    application/x-x509-ca-cert                       der pem crt;
+    application/x-xpinstall                          xpi;
+    application/xhtml+xml                            xhtml;
+    application/xspf+xml                             xspf;
+    application/zip                                  zip;
+
+    application/octet-stream                         bin exe dll;
+    application/octet-stream                         deb;
+    application/octet-stream                         dmg;
+    application/octet-stream                         iso img;
+    application/octet-stream                         msi msp msm;
+
+    audio/midi                                       mid midi kar;
+    audio/mpeg                                       mp3;
+    audio/ogg                                        ogg;
+    audio/x-m4a                                      m4a;
+    audio/x-realaudio                                ra;
+
+    video/3gpp                                       3gpp 3gp;
+    video/mp2t                                       ts;
+    video/mp4                                        mp4;
+    video/mpeg                                       mpeg mpg;
+    video/ogg                                        ogv;
+    video/quicktime                                  mov;
+    video/webm                                       webm;
+    video/x-flv                                      flv;
+    video/x-m4v                                      m4v;
+    video/x-matroska                                 mkv;
+    video/x-mng                                      mng;
+    video/x-ms-asf                                   asx asf;
+    video/x-ms-wmv                                   wmv;
+    video/x-msvideo                                  avi;
+}
+
+# configuration file /etc/nginx/sites-enabled/default:
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# https://www.nginx.com/resources/wiki/start/
+# https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
+# https://wiki.debian.org/Nginx/DirectoryStructure
+#
+# In most cases, administrators will remove this file from sites-enabled/ and
+# leave it as reference inside of sites-available where it will continue to be
+# updated by the nginx packaging team.
+#
+# This file will automatically load configuration files provided by other
+# applications, such as Drupal or Wordpress. These applications will be made
+# available underneath a path with that package name, such as /drupal8.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+# Default server configuration
+#
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	# SSL configuration
+	#
+	# listen 443 ssl default_server;
+	# listen [::]:443 ssl default_server;
+	#
+	# Note: You should disable gzip for SSL traffic.
+	# See: https://bugs.debian.org/773332
+	#
+	# Read up on ssl_ciphers to ensure a secure configuration.
+	# See: https://bugs.debian.org/765782
+	#
+	# Self signed certs generated by the ssl-cert package
+	# Don't use them in a production server!
+	#
+	# include snippets/snakeoil.conf;
+
+	root /var/www/html;
+
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name _;
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+
+	# pass PHP scripts to FastCGI server
+	#
+	#location ~ \.php$ {
+	#	include snippets/fastcgi-php.conf;
+	#
+	#	# With php-fpm (or other unix sockets):
+	#	fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+	#	# With php-cgi (or other tcp sockets):
+	#	fastcgi_pass 127.0.0.1:9000;
+	#}
+
+	# deny access to .htaccess files, if Apache's document root
+	# concurs with nginx's one
+	#
+	#location ~ /\.ht {
+	#	deny all;
+	#}
+}
+
+
+# Virtual Host configuration for example.com
+#
+# You can move that to a different file under sites-available/ and symlink that
+# to sites-enabled/ to enable it.
+#
+#server {
+#	listen 80;
+#	listen [::]:80;
+#
+#	server_name example.com;
+#
+#	root /var/www/example.com;
+#	index index.html;
+#
+#	location / {
+#		try_files $uri $uri/ =404;
+#	}
+#}
+
+# configuration file /etc/nginx/sites-enabled/images.alumno.local.conf:
+# Mapas con listas blancas para validar los parámetros de tamaño y enfoque
+map $arg_size $img_size {
+    default 300;
+    150     150;
+    300     300;
+    600     600;
+}
+
+map $arg_q $img_quality {
+    default 80;
+    60      60;
+    80      80;
+    100     100;
+}
+
+map $arg_sharpen $img_sharpen {
+    default 0;
+    0       0;
+    30      30;
+    60      60;
+    100     100;
+}
+
+# Redirección global de HTTP (puerto 80) a HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name images.alumno.local www.images.alumno.local;
+    return 301 https://images.alumno.local$request_uri;
+}
+
+# Servidor principal HTTPS para images.alumno.local
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name images.alumno.local;
+
+    root /var/www/images.alumno.local;
+    index index.html;
+
+    ssl_certificate /etc/ssl/dpl/images.alumno.local.crt;
+    ssl_certificate_key /etc/ssl/dpl/images.alumno.local.key;
+
+    # Localización general
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Localización protegida y exclusiva con image_filter y auth_basic
+    location /img {
+        auth_basic "Acceso restringido - Galeria AE3";
+        auth_basic_user_file /etc/nginx/htpasswd-images;
+        # [CRÍTICO] Evita que un error 401 (Unauthorized) devuelva un HTML 
+        # que image_filter rechace convirtiéndolo en un error 415.
+        error_page 401 @sin_autorizacion;
+
+        image_filter resize $img_size $img_size;
+        image_filter_sharpen $img_sharpen;
+        image_filter_buffer 10M;
+       
+    }
+
+    location @sin_autorizacion {
+        return 401;
+    }
+
+    access_log /var/log/nginx/images-alumno.access.log combined;
+    error_log  /var/log/nginx/images-alumno.error.log;
+}
+
+---
+
+HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Date: Mon, 19 Oct 2026 18:46:56 GMT
+Content-Type: text/html
+Content-Length: 1350
+Last-Modified: Mon, 19 Oct 2026 15:27:29 GMT
+Connection: keep-alive
+ETag: "6ad636e1-546"
+Accept-Ranges: bytes
+
+---
+
+HTTP/1.1 401 Unauthorized
+Server: nginx/1.24.0 (Ubuntu)
+Date: Mon, 19 Oct 2026 18:50:25 GMT
+Content-Type: text/html
+Content-Length: 188
+Connection: keep-alive
+WWW-Authenticate: Basic realm="Acceso restringido - Galeria AE3"
+
+---
+
+/tmp/mini.jpg JPEG 150x150 150x150+0+0 8-bit sRGB 2232B 0.000u 0:00.000
+
+---
+
+HTTP/1.1 301 Moved Permanently
+Server: nginx/1.24.0 (Ubuntu)
+Date: Mon, 19 Oct 2026 18:54:52 GMT
+Content-Type: text/html
+Content-Length: 178
+Connection: keep-alive
+Location: https://images.alumno.local/
+
+---
+
+
+[PARSING /var/log/nginx/images-alumno.access.log] {0} @ {0/s}
+Cleaning up resources...
+
+
+[PARSING /var/log/nginx/images-alumno.access.log] {0} @ {0/s}
+Cleaning up resources...
+
+---
+
+commit 826083e244f0facdba7a67bf2340c85916540699 (HEAD -> main, origin/main, origin/HEAD)
+Author: Óscar Regalado León <osrl90@gmail.com>
+Date:   Mon Oct 19 17:25:22 2026 +0200
+
+    Configuración Nginx y certificados SSL con SAN
+    
+    Añadida la configuración principal con control de errores 401, mapas de listas blancas, politicas de seguridad basic_auth y certificado publico autofirmado para images.alumno.local.
+
+commit bd2040e4172ea138b23310eb2de6a2ed71a8733f
+Author: Óscar Regalado León <osrl90@gmail.com>
+Date:   Mon Oct 19 15:07:21 2026 +0200
+
+    Configuración Nginx con HTTPS, auth_basic e image_filter
+    
+    Se añade la configuración images.alumno.local.conf con mapas de listas blancas (size, quality, sharpen), manejo explicito de error 401 para evitar fallos 415 en image_filter y certificado SSL autofirmado con SAN.
+
+commit ae6bdf1ba5957c6beddbef0bc2f58feaf714d601
+Author: Óscar Regalado León <osrl90@gmail.com>
+Date:   Mon Oct 19 14:19:57 2026 +0200
+
+    Creación de la  estructura de directorios de la AE3
+    
+:
+
+    Configuración Nginx y certificados SSL con SAN
+    
+    Añadida la configuración principal con control de errores 401, mapas de listas blancas, politicas de seguridad basic_auth y certificado publico autofirmado para images.alumno.local.
+
+commit bd2040e4172ea138b23310eb2de6a2ed71a8733f
+Author: Óscar Regalado León <osrl90@gmail.com>
+Date:   Mon Oct 19 15:07:21 2026 +0200
+
+    Configuración Nginx con HTTPS, auth_basic e image_filter
+    
+    Se añade la configuración images.alumno.local.conf con mapas de listas blancas (size, quality, sharpen), manejo explicito de error 401 para evitar fallos 415 en image_filter y certificado SSL autofirmado con SAN.
+
+commit ae6bdf1ba5957c6beddbef0bc2f58feaf714d601
+Author: Óscar Regalado León <osrl90@gmail.com>
+Date:   Mon Oct 19 14:19:57 2026 +0200
+
+    Creación de la  estructura de directorios de la AE3
+    
+    Anadidas las carpetas nginx/, web/ y certs/ respetando el arbol de ficheros requerido para la practica, además se ha actualizado el README.md y se ha añadido el fichero comprobaciones.txt
+
+commit 0bd36d1027ccf0a4d9d25ae3d25661abcb1717f9
+Author: Óscar Regalado León <osrl90@gmail.com>
+Date:   Mon Oct 19 13:42:02 2026 +0200
+
+    Inicialización del repositorio y creación del .gitignore
+    
+    Se clona el repositorio en local y se crea el fichero .gitignore con soporte de .gitignore.io de Toptal
+
+commit dc8baf1de21d4664c9dfa40242ea7bd2ef7c8c35
+Author: Óscar <oscar@oregaladoleon.es>
+Date:   Mon Oct 19 12:05:40 2026 +0100
+
+    Initial commit
+
+
+
+---

@@ -107,6 +107,19 @@ ls -l /etc/nginx/modules-enabled/  #Aquí podemos observar el enlace simbólico 
 ~~~
 
 ## Generación de las imágenes 
+Aplicamos el módulo de **ImageMagick** para generar 20 imágenes dentro del directorio /var/www/images.alumno.local/img:
+~~~bash
+docker exec dpl-lab mkdir -p /var/www/images.alumno.local/img
+
+docker exec dpl-lab bash -c 'for i in $(seq -w 1 20); do \
+  convert -size 400x400 gradient:"#2f6fed"-"#8bc34a" \
+    -fill white -pointsize 64 -gravity center -annotate 0 "IMG $i" \
+    /var/www/images.alumno.local/img/image$i.jpg; done'
+
+docker exec dpl-lab identify /var/www/images.alumno.local/img/image01.jpg   # 400x400
+~~~
+
+Las 20 imágenes de prueba no están incluidas en el control de versiones (están excluidas mediante el .gitignore) por tratarse de **ficheros binarios derivados**. En su lugar, el repositorio incluye el comando exacto de ImageMagick necesario para generarlas de forma automatizada en el entorno de laboratorio, garantizando la reproducibilidad del proyecto sin aumentar inecesariamente el tamaño del repositorio de Git.
 
 ## Configuración
 
@@ -225,7 +238,83 @@ docker exec dpl-lab nginx -t
 
 docker exec dpl-lab nginx -s reload
 ~~~
+Para la creación de los ficheros del sitio web se cogen los propuestos en la práctica guiada.
+~~~bash
+nano ~/dpl/AE3/web/index.html
+
+nano ~/dpl/AE3/web/estilos.css
+
+nano ~/dpl/AE3/web/app.js
+~~~
+Estos ficheros se copian en la ruta del sitio web dentro del contenedor:
+~~~bash
+docker cp web/. dpl-lab:/var/www/images.alumno.local/
+~~~
 ## La aplicación
 
+**image_filter** solo aplica transformaciones como resize, crop, rotate, sharpen y calidad; no soporta bordes, colores ni desenfoque. Por eso la galería aplica el borde y su color con CSS y el desenfoque con filter: blur(...), mientras que el tamaño y el enfoque viajan en la URL hasta nginx. Un módulo de terceros como ngx_small_light sí permitiría bordes y desenfoque en el servidor, pero requiere compilarlo contra la versión exacta de nginx: es una ampliación opcional, no probada en este curso.
+
+## Comprobación
+Los resultados obtenidos de las comprobaciones han sido:
+~~~bash
+curl -k -I https://localhost/ -H "Host: images.alumno.local"
+HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Date: Mon, 19 Oct 2026 18:46:56 GMT
+Content-Type: text/html
+Content-Length: 1350
+Last-Modified: Mon, 19 Oct 2026 15:27:29 GMT
+Connection: keep-alive
+ETag: "6ad636e1-546"
+Accept-Ranges: bytes
+~~~
+
+~~~bash
+curl -k -I "https://localhost/img/image01.jpg" -H "Host: images.alumno.local"
+HTTP/1.1 401 Unauthorized
+Server: nginx/1.24.0 (Ubuntu)
+Date: Mon, 19 Oct 2026 18:50:25 GMT
+Content-Type: text/html
+Content-Length: 188
+Connection: keep-alive
+WWW-Authenticate: Basic realm="Acceso restringido - Galeria AE3"
+~~~
+
+~~~bash
+curl -k -u alumno:CAMBIAR_ESTO -o /tmp/mini.jpg \
+    "https://localhost/img/image01.jpg?size=150&q=60&sharpen=30" -H "Host: images.alumno.local"
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  2232  100  2232    0     0  25368      0 --:--:-- --:--:-- --:--:-- 25655
+
+identify /tmp/mini.jpg
+/tmp/mini.jpg JPEG 150x150 150x150+0+0 8-bit sRGB 2232B 0.000u 0:00.000
+~~~
+
+~~~bash
+curl -I http://localhost/ -H "Host: images.alumno.local"
+HTTP/1.1 301 Moved Permanently
+Server: nginx/1.24.0 (Ubuntu)
+Date: Mon, 19 Oct 2026 18:54:52 GMT
+Content-Type: text/html
+Content-Length: 178
+Connection: keep-alive
+Location: https://images.alumno.local/
+~~~
+
+~~~bash
+goaccess /var/log/nginx/images-alumno.access.log \
+    --log-format=COMBINED -o /home/alumno/dpl/informe-images.json
+[PARSING /var/log/nginx/images-alumno.access.log] {0} @ {0/s}
+Cleaning up resources...
+
+goaccess /var/log/nginx/images-alumno.access.log \
+    --log-format=COMBINED -o /home/alumno/dpl/informe-images.html
+[PARSING /var/log/nginx/images-alumno.access.log] {0} @ {0/s}
+Cleaning up resources...
+
+~~~
 ## Problemas encontrados
 
+## Enlace al repositorio remoto 
+Enlace público: https://github.com/oregaladoleon/AE3-DPL.git
