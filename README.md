@@ -186,7 +186,45 @@ server {
     error_log  /var/log/nginx/images-alumno.error.log;
 }
 ~~~
+Generamos el directorio dentro del contenedor donde se alojarán los ficheros del sitio web y copiamos el archivo de configuración desde el directorio /home/alumno/dpl/ del contenedor a /etc/nginx/sites-available:
+~~~bash
+docker exec dpl-lab mkdir -p /var/www/images.alumno.local
 
+docker cp /home/alumno/dpl/AE3/nginx/images.alumno.local.conf /etc/nginx/sites-available/  
+~~~
+---
+Para generar el certificado SSL con SAN procedemos:
+~~~bash
+docker exec dpl-lab mkdir -p /etc/ssl/dpl
+
+docker exec dpl-lab openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+     -keyout /etc/ssl/dpl/images.alumno.local.key \
+     -out /etc/ssl/dpl/images.alumno.local.crt \
+     -subj "/CN=images.alumno.local" \
+     -addext "subjectAltName=DNS:images.alumno.local,DNS:www.images.alumno.local"
+~~~
+Además, copiamos la parte pública del certificado en el repositorio local.
+~~~bash
+docker cp dpl-lab:/etc/ssl/dpl/images.alumno.local.crt certs/images.alumno.local.crt
+~~~
+
+Es necesario generar unas credenciales **htpasswd** de usuario y contraseña, para ello:
+~~~bash
+docker exec dpl-lab bash -c 'echo "alumno:$(openssl passwd -apr1 CAMBIAR_ESTO)" > /etc/nginx/htpasswd-images'
+
+docker exec dpl-lab chown root:www-data /etc/nginx/htpasswd-images
+
+docker exec dpl-lab chmod 640 /etc/nginx/htpasswd-images
+~~~
+---
+Para activar el sitio web, creamos el enalce simbólico entre los directorios de /etc/nginx/sites-enabled y /etc/nginx/sites-available:
+~~~bash
+docker exec dpl-lab ln -sf /etc/nginx/sites-available/images.alumno.local.conf /etc/nginx/sites-enabled/
+
+docker exec dpl-lab nginx -t
+
+docker exec dpl-lab nginx -s reload
+~~~
 ## La aplicación
 
 ## Problemas encontrados
