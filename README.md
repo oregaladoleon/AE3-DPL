@@ -7,8 +7,14 @@ Galería con procesado de imágenes, módulos y HTTPS
 ## Objetivo
 Desplegar una galería Web en images.alumno.local que procese 20 imágenes on the fly con el módulo image_filter de nginx, protegida con autenticación, servida solo por HTTPS y con la actividad monitorizada mediante goaccess.
 
-!!!Incluir diagrama mermeid
-
+~~~mermaid
+graph LR
+    A["Navegador: galería<br/>(index.html + app.js)"] -->|actualiza src de 20 img| B["/img/imageNN.jpg?<br/>size=N&q=Q&sharpen=P"]
+    B -->|HTTPS + auth_basic| C["nginx images.alumno.local"]
+    C -->|image_filter resize + sharpen| D["/var/www/<br/>images.alumno.local/img/<br/>*.jpg"]
+    C --> E["images-alumno.access.log"]
+    E --> F["goaccess<br/>(JSON/HTML)"]
+~~~
 ## Índice
 
 - [Instalación](#Instalación)
@@ -315,6 +321,15 @@ Cleaning up resources...
 
 ~~~
 ## Problemas encontrados
+Al aplicar el siguiente comando con credenciales incorrectas:
+~~~bash
+docker exec -it dpl-lab curl -k -u alumno:CAMBIAR_ESTO -o /tmp/mini.jpg \
+    "https://localhost/img/image01.jpg?size=150&q=60&sharpen=30" \
+    -H "Host: images.alumno.local"
+~~~
+Se obtuvo un error 415 Unsupported Media Type, en vez del esperado 401 Unauthorized.
+
+Tras investigar, se detectó que en el fichero de configuración ~/dpl/AE3/nginx/images.alumno.local.conf no estaba especificada la directriz **error_page 401 @sin_autorizacion;**. Se especificó en el documento y se solucionó el problema.
 
 ## Enlace al repositorio remoto 
 Enlace público: https://github.com/oregaladoleon/AE3-DPL.git
